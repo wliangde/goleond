@@ -93,7 +93,7 @@ func Test() error {
 func InterfaceTest() {
 	varEmployee := Employee{"wld", 27, 30000, "male"}
 	var varEmpInter EmployeeGetter = &varEmployee
-	fmt.Println("type %T", varEmpInter)
+	fmt.Printf("type %T\n", varEmpInter)
 	switch varEmpInter.(type) {
 	case nil:
 		fmt.Println("nil")
