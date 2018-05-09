@@ -18,10 +18,10 @@ func TestStrategy(t *testing.T) {
 	ptPlayer1 := NewPlayer("wld", ptWinStrategy)
 	ptPlayer2 := NewPlayer("dxl", ptProbStrategy)
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10000; i++ {
 		ptHand1 := ptPlayer1.NextHand()
 		ptHand2 := ptPlayer2.NextHand()
-		t.Log("局数", i, ptHand1.String(), ptHand2.String())
+		//t.Log("局数", i, ptHand1.String(), ptHand2.String())
 		if ptHand1.isStrongerThan(ptHand2) {
 			ptPlayer1.Win()
 			ptPlayer2.Lose()

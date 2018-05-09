@@ -156,7 +156,7 @@ func (this *TProbStrategy) getHand(nValue int) *THand {
 	tempAry := this.aryRateTable[nValue]
 
 	nTotal := 0
-	for v := range tempAry {
+	for _, v := range tempAry {
 		nTotal += v
 	}
 
@@ -165,6 +165,7 @@ func (this *TProbStrategy) getHand(nValue int) *THand {
 	nOffset := 0
 	for k, v := range tempAry {
 		if nRand < v+nOffset {
+
 			return NewHand(k)
 		}
 		nOffset += v
