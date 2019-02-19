@@ -3,7 +3,23 @@
 @createtime:    2019/2/16 2:43 PM
 @desc:
 **/
+
+/*
+//example:
+
 package main
+
+import (
+	"github.com/wliangde/goleond/spider/spider_lianjia"
+)
+
+func main() {
+	ptSpider := spider_lianjia.NewSpiderLianJia()
+	ptSpider.Run()
+}
+
+*/
+package spider_lianjia
 
 import (
 	"fmt"
@@ -49,15 +65,15 @@ type House struct {
 	Tag         string //VR房源 房本满五年 随时看房
 }
 
-type TLianJiaSpider struct {
+type TSpiderLianJia struct {
 	strBaserUrl string
 	mapXiaoQu   map[uint64]*TXiaoQu
 	mapHouse    map[uint64]*House
 	chanHouse   chan *House
 }
 
-func NewLianJiaSpider() *TLianJiaSpider {
-	ptSpider := &TLianJiaSpider{
+func NewSpiderLianJia() *TSpiderLianJia {
+	ptSpider := &TSpiderLianJia{
 		strBaserUrl: "https://sh.lianjia.com/ershoufang/",
 		mapXiaoQu:   make(map[uint64]*TXiaoQu),
 		mapHouse:    make(map[uint64]*House),
@@ -70,7 +86,7 @@ func NewLianJiaSpider() *TLianJiaSpider {
 	return ptSpider
 }
 
-func (this *TLianJiaSpider) initDb() bool {
+func (this *TSpiderLianJia) initDb() bool {
 	dbhost := "47.110.50.49"
 	dbport := "3306"
 	dbuser := "root"
@@ -91,7 +107,7 @@ func (this *TLianJiaSpider) initDb() bool {
 	return true
 }
 
-func (this *TLianJiaSpider) Run() {
+func (this *TSpiderLianJia) Run() {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -112,7 +128,7 @@ func (this *TLianJiaSpider) Run() {
 	wg.Wait()
 }
 
-func (this *TLianJiaSpider) ParseWeb() {
+func (this *TSpiderLianJia) ParseWeb() {
 	strUrl := "https://sh.lianjia.com/ershoufang/"
 	ptBaseC := colly.NewCollector()
 	ptAreaC := ptBaseC.Clone()
@@ -259,7 +275,7 @@ func (this *TLianJiaSpider) ParseWeb() {
 	close(this.chanHouse)
 }
 
-func (this *TLianJiaSpider) DbInsert() {
+func (this *TSpiderLianJia) DbInsert() {
 	for ptHouse := range this.chanHouse {
 		_, err := orm.NewOrm().Insert(ptHouse)
 		if err != nil {
