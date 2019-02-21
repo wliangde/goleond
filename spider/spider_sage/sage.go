@@ -5,6 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gocolly/colly"
 	"net/url"
 	"regexp"
