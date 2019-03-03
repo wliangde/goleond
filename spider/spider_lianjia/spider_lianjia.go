@@ -142,9 +142,6 @@ func (this *TSpiderLianJia) ParseWeb() {
 	ptBaseC.OnHTML("div[data-role='ershoufang']>div > a", func(ptEle *colly.HTMLElement) {
 		strHref := ptEle.Attr("href")
 		//fmt.Println(strNewUrl)
-		if strHref == "/ershoufang/pudong/" { //已经抓取
-			return
-		}
 		if strHref == "/ershoufang/shanghaizhoubian/" {
 			return
 		}
@@ -188,6 +185,8 @@ func (this *TSpiderLianJia) ParseWeb() {
 		//break
 	}
 
+	//slcFullUrl = append(slcFullUrl, "https://sh.lianjia.com/ershoufang/xidu/pg9/")
+
 	//单页信息分析
 	ptSingePageC.OnHTML("div[class='info clear']", func(ptEle *colly.HTMLElement) {
 		//fmt.Println(ptEle.Request.URL, ptEle.Text)
@@ -217,7 +216,6 @@ func (this *TSpiderLianJia) ParseWeb() {
 				ptHouse.HuXing = strings.TrimSpace(slcStr[1])
 				fmt.Fscanf(strings.NewReader(strings.TrimSpace(slcStr[2])), "%d平米", &ptHouse.MianJi)
 			}
-			//log.Debug("house info:%s 面积:%d", ptHouse.HouseInfo, ptHouse.MianJi)
 		}
 
 		//楼层信息 高楼层(共6层)1995年建板楼
@@ -252,8 +250,8 @@ func (this *TSpiderLianJia) ParseWeb() {
 		//总价
 		ptSelection = ptEle.DOM.Find("div.totalPrice>span")
 		if ptSelection != nil {
-			dwI, _ := strconv.ParseInt(ptSelection.Text(), 10, 64)
-			ptHouse.TotalPrice = uint32(dwI)
+			f, _ := strconv.ParseFloat(ptSelection.Text(), 64)
+			ptHouse.TotalPrice = uint32(f)
 		}
 		//单价
 		ptSelection = ptEle.DOM.Find("div.unitPrice")
