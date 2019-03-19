@@ -15,7 +15,9 @@ var gbXiaoQu bool
 func main() {
 	flag.BoolVar(&gbXiaoQu, "xq", true, "是否是爬取小区")
 
-	if gbXiaoQu {
+	flag.Parse()
+	
+if gbXiaoQu {
 		spiderXiaoQu()
 	} else {
 		spiderHouse()
