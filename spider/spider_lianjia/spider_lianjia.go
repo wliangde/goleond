@@ -34,14 +34,6 @@ import (
 	"sync"
 )
 
-type TXiaoQu struct {
-	Id       uint64
-	XiaoQuId uint64
-	Name     string
-	Url      string
-	Area     string //所属区域
-}
-
 type House struct {
 	Id          uint64
 	HouseId     uint64 //房屋链家id
@@ -67,7 +59,6 @@ type House struct {
 
 type TSpiderLianJia struct {
 	strBaserUrl string
-	mapXiaoQu   map[uint64]*TXiaoQu
 	mapHouse    map[uint64]*House
 	chanHouse   chan *House
 }
@@ -75,7 +66,6 @@ type TSpiderLianJia struct {
 func NewSpiderLianJia() *TSpiderLianJia {
 	ptSpider := &TSpiderLianJia{
 		strBaserUrl: "https://sh.lianjia.com/ershoufang/",
-		mapXiaoQu:   make(map[uint64]*TXiaoQu),
 		mapHouse:    make(map[uint64]*House),
 		chanHouse:   make(chan *House, 1000),
 	}

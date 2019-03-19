@@ -1,10 +1,13 @@
 
 
-drop table if EXISTS area;
+drop table if EXISTS xiaoqu;
 create table xiaoqu (
   id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
   xiaoqu_id bigint comment '小区链家id',
-  name VARCHAR(200) COMMENT '姓名',
+  name VARCHAR(200) COMMENT '小区名',
+  price int comment '均价',
+  sell_cnt int comment '出售数量',
+  sold_cnt int comment '90天出售数量',
   url VARCHAR (200) comment '小区url',
   UNIQUE index i_area_id(xiaoqu_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
