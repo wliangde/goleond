@@ -5,12 +5,24 @@
 ***********************************************/
 package main
 
-import "github.com/wliangde/goleond/spider/spider_lianjia"
+import (
+	"flag"
+	"github.com/wliangde/goleond/spider/spider_lianjia"
+)
+
+var gbXiaoQu bool
 
 func main() {
-	spiderXiaoQu()
+	flag.BoolVar(&gbXiaoQu, "xq", true, "是否是爬取小区")
+
+	if gbXiaoQu {
+		spiderXiaoQu()
+	} else {
+		spiderHouse()
+	}
 }
 
+//爬取房子
 func spiderHouse() {
 	ptSpider := spider_lianjia.NewSpiderLianJia()
 	if ptSpider == nil {
@@ -19,6 +31,7 @@ func spiderHouse() {
 	ptSpider.Run()
 }
 
+//爬取小区
 func spiderXiaoQu() {
 	ptSpider := spider_lianjia.NewLianJiaXiaoQu()
 	if ptSpider == nil {

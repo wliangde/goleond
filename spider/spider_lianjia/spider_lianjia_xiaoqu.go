@@ -11,6 +11,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/gocolly/colly"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -61,7 +62,7 @@ func (this *TLianJiaXiaoQu) initDb() bool {
 		logs.Error("数据库注册失败, %s error:%s", dsn, err)
 		return false
 	}
-	orm.RegisterModel(new(House))
+	orm.RegisterModel(new(XiaoQu))
 	logs.Info("数据库连接成功", dsn)
 	return true
 }
@@ -88,7 +89,6 @@ func (this *TLianJiaXiaoQu) Run() {
 }
 
 func (this *TLianJiaXiaoQu) ParseWeb() {
-	//strUrl := "https://sh.lianjia.com/ershoufang/"
 	ptBaseC := colly.NewCollector()
 	ptAreaC := ptBaseC.Clone()
 	ptSmallAreaC := ptBaseC.Clone()
@@ -97,14 +97,8 @@ func (this *TLianJiaXiaoQu) ParseWeb() {
 	slcSmallArea := make([]string, 0, 100)
 	slcFullUrl := make([]string, 0, 1000)
 
-	dwCount := uint32(0)
-	dwCount2 := uint32(0)
-
 	//获取大区域
 	ptBaseC.OnHTML("div[data-role='ershoufang']>div > a", func(ptEle *colly.HTMLElement) {
-		if dwCount >= 1 {
-			return
-		}
 		strHref := ptEle.Attr("href")
 		if strHref == "/xiaoqu/shanghaizhoubian/" {
 			return
@@ -112,8 +106,6 @@ func (this *TLianJiaXiaoQu) ParseWeb() {
 		strNewUrl := ptEle.Request.AbsoluteURL(strHref)
 		fmt.Println(strNewUrl)
 		ptAreaC.Visit(strNewUrl)
-		dwCount++
-
 	})
 
 	//获取小区域
@@ -148,88 +140,51 @@ func (this *TLianJiaXiaoQu) ParseWeb() {
 	//去分页
 	for _, strUrl := range slcSmallArea {
 		ptSmallAreaC.Visit(strUrl)
-		break
+		//break
 	}
-	dwCount2++
-
-	//slcFullUrl = append(slcFullUrl, "https://sh.lianjia.com/ershoufang/xidu/pg9/")
-
 	//单页信息分析
-	//ptSingePageC.OnHTML("div[class='info clear']", func(ptEle *colly.HTMLElement) {
-	//	//fmt.Println(ptEle.Request.URL, ptEle.Text)
-	//	ptHouse := &House{}
-	//	//标题
-	//	ptSelection := ptEle.DOM.Find("div.title > a") //<div class="title"><a class="" href="https://sh.lianjia.com/ershoufang/107001263925.html" target="_blank" data-log_index="1" data-el="ershoufang" data-housecode="107001263925" data-is_focus="1" data-sl="">鹏海东苑，两房朝南，客厅厨卫朝北有窗，光线充足</a><!-- 拆分标签 --><span class="yezhushuo tagBlock">房主自荐</span></div>
-	//	if ptSelection != nil {
-	//		ptHouse.Url, _ = ptSelection.Attr("href") //https://sh.lianjia.com/ershoufang/107100530553.html
-	//		fmt.Fscanf(strings.NewReader(ptHouse.Url), "https://sh.lianjia.com/ershoufang/%d.html", &ptHouse.HouseId)
-	//		ptHouse.Title = ptSelection.Text()
-	//	}
-	//	//房型信息
-	//	ptSelection = ptEle.DOM.Find("div.houseInfo")
-	//	if ptSelection != nil {
-	//		ptHouse.HouseInfo = ptSelection.Text()
-	//		//小区
-	//		ptSel2 := ptSelection.ChildrenFiltered("a")
-	//		if ptSel2 != nil {
-	//			ptHouse.XiaoQuName = ptSel2.Text()
-	//			ptHouse.XiaoQuUrl, _ = ptSel2.Attr("href")
-	//			fmt.Fscanf(strings.NewReader(ptHouse.XiaoQuUrl), "https://sh.lianjia.com/xiaoqu/%d/", &ptHouse.XiaoQuId)
-	//		}
-	//
-	//		//紫叶花园东园  | 2室1厅 | 68.65平米 | 暂无数据 | 简装 | 无电梯
-	//		slcStr := strings.Split(ptHouse.HouseInfo, "|")
-	//		if len(slcStr) >= 3 {
-	//			ptHouse.HuXing = strings.TrimSpace(slcStr[1])
-	//			fmt.Fscanf(strings.NewReader(strings.TrimSpace(slcStr[2])), "%d平米", &ptHouse.MianJi)
-	//		}
-	//	}
-	//
-	//	//楼层信息 高楼层(共6层)1995年建板楼
-	//	ptSelection = ptEle.DOM.Find("div.positionInfo")
-	//	if ptSelection != nil {
-	//		slcString := strings.Split(ptSelection.Text(), "-")
-	//		if len(slcString) >= 2 {
-	//			ptHouse.Flood = strings.TrimSpace(slcString[0])
-	//			ptHouse.Area = strings.TrimSpace(slcString[1])
-	//		}
-	//	}
-	//
-	//	//带看信息
-	//	ptSelection = ptEle.DOM.Find("div.followInfo")
-	//	if ptSelection != nil {
-	//		strFollowInfo := ptSelection.Text()
-	//		slcStr := strings.Split(strFollowInfo, "/") //245人关注 / 共7次带看 / 一年前发布
-	//		if len(slcStr) == 3 {
-	//			fmt.Fscanf(strings.NewReader(strings.TrimSpace(slcStr[0])), "%d人关注", &ptHouse.Follow)
-	//			fmt.Fscanf(strings.NewReader(strings.TrimSpace(slcStr[1])), "共%d次带看", &ptHouse.Look)
-	//			ptHouse.ReleaseTime = strings.TrimSpace(slcStr[2])
-	//			//log.Debug("followinfo %d, %d, %s", ptHouse.Follow, ptHouse.Look, ptHouse.ReleaseTime)
-	//		}
-	//	}
-	//
-	//	//tag
-	//	ptSelection = ptEle.DOM.Find("div.tag")
-	//	if ptSelection != nil {
-	//		ptHouse.Tag = ptSelection.Text()
-	//	}
-	//
-	//	//总价
-	//	ptSelection = ptEle.DOM.Find("div.totalPrice>span")
-	//	if ptSelection != nil {
-	//		f, _ := strconv.ParseFloat(ptSelection.Text(), 64)
-	//		ptHouse.TotalPrice = uint32(f)
-	//	}
-	//	//单价
-	//	ptSelection = ptEle.DOM.Find("div.unitPrice")
-	//	if ptSelection != nil {
-	//		strPrice, _ := ptSelection.Attr("data-price")
-	//		dwI, _ := strconv.ParseInt(strPrice, 10, 64)
-	//		ptHouse.Price = uint32(dwI)
-	//	}
-	//	this.chanXiaoQu <- ptHouse
-	//	logs.Debug("wld======", ptHouse)
-	//})
+	ptSingePageC.OnHTML("li[class='clear xiaoquListItem']", func(ptEle *colly.HTMLElement) {
+		//fmt.Println(ptEle.Request.URL, ptEle.Text)
+		ptXiaoQu := &XiaoQu{}
+		//标题
+		ptSelection := ptEle.DOM.Find("div.title > a")
+		if ptSelection != nil {
+			ptXiaoQu.Url, _ = ptSelection.Attr("href") //https://sh.lianjia.com/ershoufang/107100530553.html
+			fmt.Fscanf(strings.NewReader(ptXiaoQu.Url), "https://sh.lianjia.com/xiaoqu/%d.html", &ptXiaoQu.XiaoQuId)
+			ptXiaoQu.Name = ptSelection.Text()
+		}
+
+		//区域		浦东 北蔡
+		ptSel := ptEle.DOM.Find("div.positionInfo > a.bizcircle")
+		if ptSel != nil {
+			ptXiaoQu.Area = ptSel.Text()
+		}
+		//90天成交量
+		ptSel = ptEle.DOM.Find("div.houseInfo > a")
+		if ptSel != nil {
+			strTitle, _ := ptSel.Attr("title") //xxx网签
+			if strings.HasSuffix(strTitle, "网签") {
+				str := ptSel.Text() //90天成就1套
+				fmt.Fscanf(strings.NewReader(str), "90天成交%d套", &ptXiaoQu.SoldCnt)
+			}
+		}
+		//均价
+		ptSel = ptEle.DOM.Find("div.totalPrice > span")
+		if ptSel != nil {
+			lnPrice, _ := strconv.ParseInt(ptSel.Text(), 10, 64)
+			ptXiaoQu.Price = uint32(lnPrice)
+		}
+
+		//在售套数
+		ptSel = ptEle.DOM.Find("a.totalSellCount > span")
+		if ptSel != nil {
+			lnSell, _ := strconv.ParseInt(ptSel.Text(), 10, 64)
+			ptXiaoQu.SellCnt = uint32(lnSell)
+		}
+
+		this.chanXiaoQu <- ptXiaoQu
+		logs.Debug("wld======", ptXiaoQu)
+	})
 
 	//分页后的数据
 	for _, strUrl := range slcFullUrl {
