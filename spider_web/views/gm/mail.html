@@ -1,0 +1,85 @@
+
+<form class="layui-form" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">收件人类型：</label>
+        <div class="layui-input-block star_input_width">
+            <select name="recv_type" lay-verify="required" lay-filter="recv_type">
+                <option value="1">1.指定玩家ID/角色名</option>
+                <option value="2">2.批量指定区服中部分满足指定条件类的玩家</option>
+                <option value="3">3.导入外部玩家列表文件</option>
+            </select>
+        </div>
+        <hr>
+    </div>
+</form>
+
+    <div class="layui-form-item">
+        <div class="layui-inline"  style="height: 40px;">
+            <label class="layui-form-label">收件人：</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="txt_recv" readonly required lay-verify="required" placeholder="收件人" autocomplete="off"
+                       class="layui-input" value="">
+            </div>
+            <div class="layui-input-inline" style="width: auto">
+                <button class="layui-btn star_plus_btn" id="btn_add_recv" style="display: none;">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+                <button class="layui-btn star_plus_btn" id="btn_add_file" style="display: none;">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+                <button class="layui-btn layui-btn-danger " id="btn_del">清空</button>
+                <label id="id_file_notice" style="margin-left: 10px; color: grey;"></label>
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">主题：</label>
+        <div class="layui-input-block star_input_width">
+            <input type="text" id="txt_title" required lay-verify="required" placeholder="邮件主题" autocomplete="off"
+                   class="layui-input">
+        </div>
+        <hr>
+    </div>
+<form class="layui-form" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">图标：</label>
+        <div class="layui-input-block star_input_width">
+            <select id="select_icon" lay-verify="required" lay-filter="select_icon">
+                <option value="1" >图标1</option>
+                <option value="2">图标2</option>
+                <option value="3">图标3</option>
+            </select>
+        </div>
+        <hr>
+    </div>
+</form>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">内容：</label>
+        <div class="layui-input-block ">
+            <textarea name="desc" placeholder="邮件内容" class="layui-textarea" id="txt_content"></textarea>
+        </div>
+        <hr>
+    </div>
+    <div class="layui-form-item ">
+        <label class="layui-form-label">附件：</label>
+        <div class="layui-input-block">
+            <button class="layui-btn" id="btn_add_attach">
+                <i class="layui-icon">&#xe654;</i>
+            </button>
+            <table id="mail_attach">
+            </table>
+        </div>
+
+        <hr>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit  lay-filter="btn_send">发送</button>
+                <label id="id_result" style="margin-left: 10px; font-weight: bold;"></label>
+        </div>
+    </div>
+
+<script src="/static/js/mail.js"></script>

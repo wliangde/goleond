@@ -1,0 +1,130 @@
+<style type="text/css">
+    .onekeydump_label_width {
+        width: 100px;
+    }
+
+</style>
+
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+        <form class="layui-form">
+            <label class="layui-form-label" style="width: 60px; text-align: left">选择服：</label>
+            <div class="layui-input-inline ">
+                <select name="select_server_id" id="select_server_id" lay-verify="required">
+                    <option value="">请选择服</option>
+                {{range $index,$elem := .ServerList}}
+                    <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                            selected {{end}}  >{{$elem.name}}</option>
+                {{end}}
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <button class="layui-btn" id="btn_search" style="margin-left: 10px">查询</button>
+                <button class="layui-btn" id="btn_add">封禁玩家</button>
+            </div>
+        </form>
+    </div>
+    <table class="layui-hide" id="table_list" lay-filter="table_filter">
+    </table>
+
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs" lay-event="free">解封</a>
+    </script>
+</div>
+
+
+<script>
+    var layer;
+    var table;
+    var serverId;
+
+    var doSearch = function () {
+        serverId =$('#select_server_id').val();
+        if (serverId == "") {
+            layer.msg('请选择服');
+            return false;
+        }
+        //方法级渲染
+        table.render({
+            elem: '#table_list'
+            ,url: '/gm/forbiduserlist?server_id='+ serverId
+            ,cols: [[
+                {field:'id', title: 'ID', align:'center',sort: true, width:150}
+                ,{field:'uuid',title: '玩家uuid' }
+                ,{field:'forbid_time',title: '封号时间' }
+                ,{field:'free_time',title: '解封时间' }
+                ,{field:'reason',title: '封号原因' }
+                ,{fixed: 'right', width:160, align:'center', toolbar: '#bar'}
+            ]]
+            ,limit:50               //每页条数
+            ,id: 'listReload'
+            ,page: true
+            ,height: "full-130"
+        });
+        return false;
+    };
+
+    //解封玩家
+    var sendDecForbidUser = function (uuid) {
+        if (serverId == "") {
+            return false;
+        }
+        if (uuid == "") {
+            return false;
+        }
+        var freeTime = "";  //解封
+        var args = {};
+        args.server_id = serverId;
+        args.uuid = uuid;
+        args.free_time = freeTime;
+        $.post('{{urlfor "GmController.Ajax_Add_Forbid_User"}}', args, sendGmCmdRes, "json");
+    };
+
+    var sendGmCmdRes = function (data) {
+        console.log("status", data.status);
+        if (data.status === 0) { //成功
+            layer.msg(data.message);
+            doSearch();
+            return
+        }
+        layer.msg(data.message);
+    };
+
+    layui.use(['layer', 'table'], function(){
+        layer = layui.layer;
+        table = layui.table;
+
+        //监听工具条
+        table.on('tool(table_filter)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'free') { //解封
+                sendDecForbidUser(data.uuid);
+            } else {
+                layer.msg('操作不存在');
+            }
+        });
+
+        //查询
+        $('#btn_search').on('click',doSearch);
+
+        //点击修改服务器
+        $('#btn_add').on('click', function () {
+            serverId =$('#select_server_id').val();
+            if (serverId == "") {
+                layer.msg('请选择服');
+                return false;
+            }
+            layer.open({
+                type: 2,
+                title: '封禁玩家',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['500px', '400px'],
+                content: 'add_forbid_user.html'
+            });
+            return false;       //不然layui本身的required 检查会触发
+        });
+
+    });
+
+</script>

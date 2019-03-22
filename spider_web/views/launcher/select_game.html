@@ -1,0 +1,55 @@
+<style xmlns="http://www.w3.org/1999/html">
+    .sc_height {
+        height: 450px;
+        overflow-y: scroll;
+    }
+
+    .star_input_width {
+        width: 100px;
+    }
+
+    .c_ch_plat {
+        padding-left: 20px;
+    }
+
+    .c_ch_plat div {
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+
+    .span_duigou {
+        color: red;
+        margin-right: 5px;
+        display: -moz-inline-box;
+        display: inline-block;
+        width: 20px;
+    }
+
+    .choose_item {
+        width: 200px;
+        float: left;
+    }
+</style>
+
+<div class="sc_height layui-form c_ch_plat" id="select_server">
+    <div>
+        <input type="checkbox" lay-skin="primary" lay-filter="server_chooseall" id="server_chooseall" title="全选" v-model="select_all">
+    </div>
+    <div id="id_server_list">
+    {{/*js动态填充*/}}
+    </div>
+    {{/*<div v-for="server in serverList">*/}}
+        {{/*<div class="choose_item">*/}}
+            {{/*<input type="checkbox" lay-filter="server_choose" v-model="server.checked" lay-skin="primary" >*/}}
+            {{/*<label for="checkbox">[[server.checked]]</label>*/}}
+        {{/*</div>*/}}
+    {{/*</div>*/}}
+    {{/*<input type="checkbox" lay-skin="primary" title="wlddd" checked>*/}}
+</div>
+<hr>
+
+<div style="margin-left: 320px">
+    <button class="layui-btn " id="btn_add" lay-submit="" lay-filter="btn_add">确定</button>
+    <button class="layui-btn layui-btn-danger" style="margin-left: 140px" id="btn_cancel">取消</button>
+</div>
+<script src="/static/js/launcher_select_game.js"></script>

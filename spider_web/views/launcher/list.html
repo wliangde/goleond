@@ -1,0 +1,85 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+        <div class="layui-col-xs6">
+            <a class="layui-btn" data-type="tabAdd" href="/launcher/add">新增</a>
+        </div>
+    </div>
+
+    <table class="layui-hide" id="table_list" lay-filter="table_filter">
+    </table>
+
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="del" style="background-color: red">删除</a>
+    </script>
+</div>
+<script>
+
+    layui.use(['table','form','element'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var element = layui.element;
+
+        //方法级渲染
+        table.render({
+            elem: '#table_list'
+            ,url: '/launcher/table'
+            ,cols: [[
+                // {checkbox: true, fixed: true},
+                {field:'id', title: 'ID', align:'center',sort: true, width:150}
+                ,{field:'addr',title: '地址'}
+                ,{field:'web_addr',title: 'web地址'}
+                ,{field:'game_servers', title: 'game服'}
+                ,{field:'cross_servers', title: 'cross服'}
+                ,{field:'battle_servers', title: 'battle服'}
+                ,{fixed: 'right', width:160, align:'center', toolbar: '#bar'}
+            ]]
+            ,id: 'listReload'
+            ,page: true
+            ,height: "full-130"
+        });
+
+        var $ = layui.$, active = {
+            reload: function(){
+                table.reload('listReload', {
+                    where: {
+                        realName: $('#realName').val(),
+                    }
+                });
+            }
+        };
+
+        //监听工具条
+        table.on('tool(table_filter)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'edit'){
+                window.location.href="/launcher/edit?addr="+data.addr
+            }  else if (obj.event === 'del') {
+                layer.confirm('真的要删除'+'服务器['+data.id +'--'+ data.addr+']不?', function(index){
+                    var jsData = {'id':data.id, 'addr':data.addr};
+                    $.post('{{urlfor "LauncherController.AjaxDel"}}', jsData, function (out) {
+                        //删除成功刷新table
+                        if (out.status == 0) {
+                            layer.alert(out.message, {icon: 1},function(index){
+                                layer.close(index);
+                                window.location.href="/launcher/list"
+                            });
+                        } else {
+                            layer.msg(out.message)
+                        }
+                    }, "json");
+                    // obj.del();
+                    layer.close(index);
+                })
+            } else{
+                layer.msg('操作不存在');
+            }
+        });
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+
+</script>

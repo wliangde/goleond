@@ -1,0 +1,124 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+        <div class="layui-col-xs6">
+            <a class="layui-btn" data-type="tabAdd" href="/serverbattle/add">新增</a>
+        </div>
+    </div>
+
+    <table class="layui-hide" id="table_list" lay-filter="table_filter">
+    </table>
+
+    <script type="text/html" id="bar">
+       <!--  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a> -->
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="del" style="background-color: red">删除</a>
+       <a class="layui-btn layui-btn-xs" lay-event="stop" style="background-color: orange">关服</a>
+       <a class="layui-btn layui-btn-xs" lay-event="restart" style="background-color: red">重启</a>
+
+    </script>
+</div>
+<script>
+
+    layui.use(['table','form','element'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var element = layui.element;
+
+        //方法级渲染
+        table.render({
+            elem: '#table_list'
+            ,url: '/serverbattle/table'
+            ,cols: [[
+                // {checkbox: true, fixed: true},
+                {field:'server_id', title: '服务器ID', align:'center',sort: true, width:150}
+                ,{field:'addr', title: '服务器地址', align:'center',sort: true, width:150}
+                ,{field:'server_name',title: '服务器名字', width:200}
+                ,{field:'text_status',title: '状态', width:100}
+                ,{field:'web_addr', title: 'gm地址'}
+                ,{field:'srpc_addr', title: 'srpc日志地址'}
+                ,{field:'verify_num', title: 'verify_num'}
+                ,{field:'pvp_num', title: 'pvp_num'}
+                ,{fixed: 'right', width:200, align:'center', toolbar: '#bar'}
+            ]]
+            ,id: 'listReload'
+            ,page: true
+            ,height: "full-130"
+        });
+
+        var $ = layui.$, active = {
+            reload: function(){
+                table.reload('listReload', {
+                    where: {
+                        realName: $('#realName').val(),
+                    }
+                });
+            }
+        };
+
+        //监听工具条
+        table.on('tool(table_filter)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'edit'){
+                window.location.href="/serverbattle/edit?id="+data.server_id
+            } else if(obj.event === 'status'){
+
+                acts = "禁用";
+                status = "disable";
+                if (data.status === 0) {
+                    acts = '启用';
+                    status = "enable";
+                }
+                if (data.server_id==1 && obj.event === 'disable') {
+                   layer.msg('超级管理员不允许操作');
+                   return false;
+                }
+
+                layer.confirm('真的'+acts+'【'+data.login_name+'】账号么', function(index){
+                    var jsData = {'id':data.server_id,'status':status};
+                    $.post('{{urlfor "AdminController.AjaxDel"}}', jsData, function (out) {
+                        if (out.status == 0) {
+                            layer.alert(out.message, {icon: 1},function(index){
+                                layer.close(index);
+                                window.location.reload();
+                            });
+                        } else {
+                            layer.msg(out.message)
+                        }
+                    }, "json");
+                    // obj.del();
+                    layer.close(index);
+                })
+                
+            } else if (obj.event === 'del') {
+                layer.confirm('真的要删除'+'服务器['+data.server_id +'--'+ data.name+']不?', function(index){
+                    var jsData = {'server_id':data.server_id};
+                    $.post('{{urlfor "ServerBattleController.AjaxDel"}}', jsData, function (out) {
+                        //删除成功刷新table
+                        if (out.status == 0) {
+                            layer.alert(out.message, {icon: 1},function(index){
+                                layer.close(index);
+                                window.location.reload();
+                            });
+                        } else {
+                            layer.msg(out.message)
+                        }
+                    }, "json");
+                    // obj.del();
+                    layer.close(index);
+                })
+            }else if (obj.event ==  'stop') {
+                gmStopServer(layer, data.server_id, data.server_name);
+            } else if (obj.event == 'restart') {
+                gmRestartServer(layer, data.server_id, data.server_name);
+            } else{
+                layer.msg('操作不存在');
+            }
+        });
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+
+</script>

@@ -1,0 +1,106 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+
+<form class="layui-form" action="" method="post" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">服务器名字</label>
+        <div class="layui-input-inline">
+            <input type="text" name="server_name" id="server_name" lay-verify="required" autocomplete="off" placeholder="服务器名字" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">proxy监听地址</label>
+        <div class="layui-input-inline">
+            <input type="text" name="web_addr" lay-verify="required" autocomplete="off" placeholder="30.17.3.155" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*(端口自动分配，gmproxy和charge_proxy访问的地址)</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">日志服务器地址</label>
+        <div class="layui-input-inline">
+            <input type="text" name="srpc_addr" lay-verify="required" autocomplete="off" placeholder="30.17.3.155:44445" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">redis配置</label>
+        <div class="layui-input-inline">
+            <input type="text" name="redis_addr" lay-verify="required" autocomplete="off" placeholder="30.17.3.155:6381" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">dbid</label>
+        <div class="layui-input-inline">
+            <input type="number" name="dbid" lay-verify="required" autocomplete="off" placeholder="2" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">开服时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="open_time" name="open_time"  class="layui-input" value="">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</div>
+<script>
+var $;
+    layui.config({
+            base : "js/"
+    }).use(['form','element','layer','jquery', 'laydate'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+        var role_ids = [];
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#open_time' //指定元素
+            ,type: 'datetime'
+        });
+
+        form.on('checkbox(role_ids)', function(data){
+            if(data.elem.checked==true){
+                role_ids.push(data.value)
+            }else{
+                $.each(role_ids,function(index,item){  
+                    // index是索引值（即下标）   item是每次遍历得到的值；
+                    if(item==data.value){
+                        role_ids.splice(index,1);
+                    }
+                });
+            }
+            $("#roleids").val(role_ids.join(","));
+        });
+        form.on('submit(sub)', function(data){
+            var form_data = $("form").serialize();
+            $.post('{{urlfor "ServerGameController.AjaxNew"}}', form_data, function (out) {
+                if (out.status == 0) {
+                    layer.msg("操作成功",{icon: 1},function () {
+                        // window.location.href="/servergame/list"
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+      
+      //但是，如果你的HTML是动态生成的，自动渲染就会失效
+      //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+      form.render();
+}); 
+</script>

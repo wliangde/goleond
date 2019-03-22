@@ -1,0 +1,102 @@
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <div class="layui-inline" style="height: 40px;">
+            <label class="layui-form-label">平台渠道</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="txt_recv" readonly required lay-verify="required" placeholder="平台渠道"
+                       autocomplete="off"
+                       class="layui-input" value="">
+            </div>
+            <div class="layui-input-inline" style="width: auto">
+                <button class="layui-btn star_plus_btn" id="btn_select_chan">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+            </div>
+        </div>
+        <hr>
+    </div>
+
+{{/*隐藏，做数传输用*/}}
+    <input type="text" id="plat_id" style="display: none" value="{{.plat_id}}">
+    <input type="text" id="channel_id" style="display: none" value="{{.channel_id}}">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">patch</label>
+            <div class="layui-input-inline " style="width: 400px">
+                <textarea name="patch" placeholder="patch内容" class="layui-textarea" id="patch">{{.patch}}</textarea>
+            </div>
+            <div class="layui-input-inline" style="height: 100px">
+                <div style="visibility:hidden">ddd</div>
+                <div style="visibility:hidden">ddd</div>
+                <input type="checkbox" title="生效" id="cb_patch"  >
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">版本号</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="version" required lay-verify="required" placeholder="版本号" autocomplete="off"
+                       value="{{.version}}"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="checkbox" title="生效" id="cb_version" >
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">patch地址</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="patch_url" placeholder="patch 下载地址" autocomplete="off" value="{{.patch_url}}"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="checkbox" title="生效" id="cb_patch_url" >
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <div class="layui-inline">
+            <label class="layui-form-label">最低版本</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="min_version" placeholder="最低版本" autocomplete="off" value="{{.min_version}}"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="checkbox" title="生效" id="cb_min_version" >
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <div class="layui-inline">
+            <label class="layui-form-label">母包地址</label>
+            <div class="layui-input-inline" style="width: 400px">
+                <input type="text" id="min_url" placeholder="母包地址" autocomplete="off" value="{{.min_url}}"
+                       class="layui-input">
+            </div>
+            <div class="layui-input-inline">
+                <input type="checkbox" title="生效" id="cb_min_url" >
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="btn_send">发送</button>
+            <label id="id_result" style="margin-left: 10px; font-weight: bold;"></label>
+        </div>
+    </div>
+</form>
+<script src="/static/js/release_version.js"></script>

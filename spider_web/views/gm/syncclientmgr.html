@@ -1,0 +1,79 @@
+
+
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <table class="layui-hide" id="table_list" lay-filter="table_filter">
+    </table>
+
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="update_server">更新服务器</a>
+    </script>
+</div>
+<script>
+    var layer;
+
+    //显示和关闭加载框
+    var showLoading = function (show) {
+        if (show === true) {
+            layer.load(2);
+        } else {
+            layer.closeAll('loading');
+        }
+    };
+
+
+    var doUpdateServer = function(id) {
+        var args = {};
+        args.id = id;
+        $.post('/gm/ajaxupdatesingleserver', args, doRealeaseRes, "json");
+        showLoading(true);
+        return false;       //不然layui本身的required 检查会触发
+    };
+
+    var doRealeaseRes = function (data) {
+        //关闭加载框
+        showLoading(false);
+        if (data.status != 0) { //失败
+            layer.msg(data.message);
+            return;
+        }
+        layer.msg(data.message);
+        //刷新页面
+        window.location.reload();
+    };
+
+
+    layui.use(['layer', 'table'], function(){
+        layer = layui.layer;
+        var table = layui.table;
+        //方法级渲染
+        table.render({
+            elem: '#table_list'
+            ,url: '/gm/ajaxreqsyncclient'
+            ,cols: [[
+                {field:'id', title: 'ID', align:'center',sort: true, width:150}
+                ,{field:'name', title: '版本名字' }
+                ,{field:'web_addr', width:400, title: 'web地址' }
+                ,{field:'sync_num',title: '版本同步号' }
+                ,{field:'desc',title: '描述' }
+                ,{fixed: 'right', width:200, align:'center', toolbar: '#bar'}
+            ]]
+            ,plat_id: 'listReload'
+            ,page: true
+            ,height: "full-130"
+        });
+
+        //监听工具条
+        table.on('tool(table_filter)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                // window.location.href = "/gm/releaseversion?plat_id=" + data.plat_id+"&channel_id="+data.channel_id;
+            } else if (obj.event === 'update_server') {
+                doUpdateServer(data.id)
+            }
+            else{
+                layer.msg('操作不存在');
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,265 @@
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            {{/*<label class="layui-form-label">选择渠道：</label>*/}}
+            {{/*<div class="layui-input-inline star_input_width">*/}}
+                {{/*<select id="select_plat_id" lay-verify="required" lay-filter="select_plat_id">*/}}
+                {{/*{{range $index,$elem := .PlatList}}*/}}
+                    {{/*<option value="{{$elem.id}}" >{{$elem.name}}</option>*/}}
+                {{/*{{end}}*/}}
+                {{/*</select>*/}}
+            {{/*</div>*/}}
+
+            <label class="layui-form-label">选择服：</label>
+            <div class="layui-input-inline " style="width: 100px;">
+                <select id="select_server_id" lay-verify="required" lay-filter="select_server_id">
+                </select>
+            </div>
+
+                <label class="layui-form-label">角色ID：</label>
+                <div class="layui-input-inline " style="width: 150px;">
+                    <input onkeyup="cky(this)"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')" id="user_id" name="user_id" required
+                           lay-verify="required" placeholder="角色ID" autocomplete="off"
+                           class="layui-input" value="">
+                </div>
+
+                <label class="layui-form-label">角色名：</label>
+                <div class="layui-input-inline " style="width: 200px;">
+                    <input id="user_name" name="user_name" required lay-verify="required" placeholder="名字" class="layui-input" value="">
+                </div>
+
+                <div class="layui-input-inline" style="width: auto">
+                    <button class="layui-btn" id="btn_search"> 查询</button>
+                </div>
+        </div>
+        <hr>
+    </div>
+
+</form>
+<div style="padding-left: 10px; padding-right: 10px">
+    <p>当前查询</p>
+    <table class="layui-show" id="tb_cur_search" lay-filter="tb_cur_search">
+    </table>
+
+    <p>当前收件人</p>
+    <table class="layui-show" id="tb_cur_recv" lay-filter="tb_cur_recv">
+    </table>
+
+    <div class="layui-inline" style="width: 100%; ">
+        <div class="layui-input-inline layui-col-sm4" style="text-align: right">
+            <button class="layui-btn " id="btn_add">确定</button>
+        </div>
+        <div class="layui-col-sm4 layui-col-sm-offset4">
+            <button class="layui-btn layui-btn-danger" id="btn_cancel">取消</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/html" id="bar_add">
+    <a class="layui-btn layui-btn-xs" lay-event="add">添加</a>
+</script>
+<script type="text/html" id="bar_del">
+    <a class="layui-btn layui-btn-xs" lay-event="del" style="background-color: red">删除</a>
+</script>
+
+<script>
+    var MyReceiverData;
+    var table;
+    var form;
+    layui.use(['layer', 'table', 'form', 'element', 'jquery'], function () {
+        table = layui.table;
+        form = layui.form;
+        var $ = layui.jquery;
+
+        //
+        if (parent.GLastPaltId > 0) {
+            $("#select_plat_id").val(parent.GLastPaltId);
+        }else  {
+            parent.GLastPaltId =$("#select_plat_id").val();
+        }
+        updateSelectServer(parent.GLastPaltId, true);
+
+        //选择渠道 请求服
+        form.on('select(select_plat_id)', function (data) {
+            parent.GLastPaltId =data.value;
+            updateSelectServer(parent.GLastPaltId, false);
+        });
+
+        //查询玩家
+        $('#btn_search').on('click', function () {
+            searchUser();
+            return false;
+        });
+
+        //当前查询列表渲染
+        table.render({
+            elem: '#tb_cur_search'
+            , url: '/gm/searchuserbrief'
+            , cols: [[
+                {field: 'id', title: 'ID', align: 'center', sort: true}
+                , {field: 'plat_id', title: '渠道ID'}
+                , {field: 'plat_name', title: '渠道'}
+                , {field: 'svr_id', title: '服务器ID'}
+                , {field: 'svr_name', title: '服务器'}
+                , {field: 'user_id', title: '玩家id'}
+                , {field: 'user_name', title: '玩家名'}
+                , {field: 'level', title: '玩家等级'}
+                , {field: 'vip_level', title: 'vip等级'}
+                , {fixed: 'right', width: 60, align: 'center', toolbar: '#bar_add'}
+            ]]
+            , id: 'tb_cur_search'
+            , page: false
+            // ,height: "200px"
+        });
+
+        //拷贝数据
+        MyReceiverData = copyData(parent.GReceiverData);
+        //当前查询监听工具条
+        table.on('tool(tb_cur_search)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'add') {
+                if (insertData(data)) {
+                    renderRecvTable();
+                }
+            }
+        });
+
+        //已经添加的收件人 删除
+        table.on('tool(tb_cur_recv)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                if (delData(data)) {
+                    renderRecvTable();
+                }
+            }
+        });
+
+        //已经添加的收件人列表
+        renderRecvTable();
+
+        $('#btn_add').on('click', function () {
+            parent.GReceiverData = copyData(MyReceiverData);
+
+            //刷新接收人
+            var values =parent.GReceiverData.values();
+            var txtVal;
+            for (var i in values) {
+                var user = values[i];
+                txtVal = user.plat_name + "-" + user.svr_name + "-" + user.user_id;
+                break;
+            }
+            if (values.length > 1) {
+                txtVal += " 等" + values.length + "个玩家";
+            }
+            console.log(txtVal);
+            parent.refreshTxtRecv(txtVal);
+        });
+
+        //关闭弹窗
+        $('#btn_cancel').on('click', function () {
+            //关闭弹窗
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);//关闭弹出的子页面窗口
+        });
+    });
+
+    //查询玩家并刷新table
+    var searchUser = function () {
+        table.reload('tb_cur_search', {
+            where: {
+                plat_id: $("#select_plat_id").val(),
+                server_id: $("#select_server_id").val(),
+                user_id: $("#user_id").val(),
+                user_name:$("#user_name").val(),
+            }
+        });
+    };
+
+    var renderRecvTable = function () {
+        table.render({
+            elem: '#tb_cur_recv'
+            , data: MyReceiverData.values()
+            , cols: [[
+                {field: 'id', title: 'ID', align: 'center', sort: true}
+                , {field: 'plat_id', title: '渠道ID'}
+                , {field: 'plat_name', title: '渠道'}
+                , {field: 'svr_id', title: '服务器ID'}
+                , {field: 'svr_name', title: '服务器'}
+                , {field: 'user_id', title: '玩家id'}
+                , {field: 'user_name', title: '玩家名'}
+                , {field: 'level', title: '玩家等级'}
+                , {field: 'vip_level', title: 'vip等级'}
+                , {fixed: 'right', width: 60, align: 'center', toolbar: '#bar_del'}
+            ]]
+            , id: 'tb_cur_recv'
+            , page: false
+            , height: "250px"
+        });
+    };
+
+    //插入收件人
+    var insertData = function (newUser) {
+        var maxId = 0;
+        var values = MyReceiverData.values();
+        if (values.length >= 100) {
+            layer.msg("人数超过100个人！");
+            return;
+        }
+        for (var i in values) {
+            var user = values[i];
+            if (user.user_id == newUser.user_id && user.plat_id == newUser.plat_id) {
+                layer.msg("已添加");
+                return false
+            }
+            if (user.id > maxId)
+                maxId = user.id
+        }
+        newUser.id = maxId + 1;
+        parent.GLastServerId = newUser.svr_id;
+        MyReceiverData.put(newUser.id, newUser);
+        layer.msg("添加成功");
+        return true;
+    };
+
+    //删除收件人
+    var delData = function (delUser) {
+        MyReceiverData.remove(delUser.id);
+        layer.msg("删除成功");
+        return true;
+    };
+
+    var copyData = function (fromData) {
+        var toData = new Map();
+        var values = fromData.values();
+        for (var i in values) {
+            data = values[i];
+            var receiver = Object.assign({}, data);
+            toData.put(receiver.id, receiver);
+        }
+        return toData;
+    };
+
+    var updateSelectServer = function(paltId, bInit) {
+        $.getJSON("/gm/getbriefseverlist?server_type=1", function (data) {
+            var optionstring = "";
+            $.each(data.data, function (i, item) {
+                if (item.server_id == parent.GLastServerId && bInit) {
+                    optionstring += "<option value=\"" + item.Id + "\" selected >" + item.Name + "</option>";
+                }else {
+                    optionstring += "<option value=\"" + item.Id + "\" >" + item.Name + "</option>";
+                }
+            });
+            $("#select_server_id").html(optionstring);
+            form.render('select'); //这个很重要
+        });
+    }
+
+    function cky(obj)
+    {
+        var t = obj.value.replace(/\D/g,"");
+        if(obj.value!=t)
+            obj.value=t;
+    }
+</script>

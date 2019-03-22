@@ -1,0 +1,102 @@
+<style>
+    .star_input_width {
+        width: 300px;
+    }
+</style>
+
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">Type：</label>
+        <div class="layui-input-block star_input_width">
+            <select name="resource_key" id="resource_key" lay-verify="required" lay-search=""
+                    lay-filter="resourcelist">
+            {{range $index,$elem := .ResourceList}}
+                <option value="{{$elem.id}}">{{$elem.name}}</option>
+            {{end}}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Id：</label>
+        <div class="layui-input-block star_input_width">
+            <select name="resource_id" id="resource_id" lay-verify="" lay-search=""
+            >
+                <option value=""></option>
+            {{range $index,$elem := .ResourceIdList}}
+                <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                        selected {{end}}  >{{$elem.name}}</option>
+            {{end}}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label my_label">数量</label>
+        <div class="layui-input-block star_input_width" >
+            <input type="number" name="txt_as_num" id="txt_as_num"  lay-verify="username"
+                   autocomplete="off" placeholder="数量" class="layui-input">
+        </div>
+    </div>
+</form>
+
+<div class="layui-inline" style="width:100%;" >
+            <button class="layui-btn " id="btn_add" lay-submit="" lay-filter="btn_add" style="margin-left: 110px;">确定</button>
+            <button class="layui-btn layui-btn-danger" style="margin-left: 170px" id="btn_cancel">取消</button>
+</div>
+
+<script>
+
+    layui.use(['layer', 'table', 'form', 'element', 'jquery'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+
+        //资源列表联动
+        form.on('select(resourcelist)', function(data){
+            $.getJSON("/gm/getresourceidlist?pid="+data.value, function(data){
+                var optionstring = "";
+                $.each(data.message, function(i,item){
+                    optionstring += "<option value=\"" + item.id + "\" >" + item.name + "</option>";
+                });
+                if (optionstring == "") {
+                    optionstring +='<option value=""></option>';
+                }
+                $("#resource_id").html(optionstring);
+                form.render('select'); //这个很重要
+            });
+        });
+
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        //增加附件
+        form.on('submit(btn_add)', function (data) {
+            var attach = {};
+            attach["res_type"] = $("#resource_key").val();
+            attach["res_type_name"] = $("#resource_key").find("option:selected").text();
+            attach["res_id"] = $("#resource_id").val();
+            attach["res_id_name"] = $("#resource_id").find("option:selected").text();
+            attach["res_num"] = parseInt($("#txt_as_num").val());
+
+            if (attach.res_type == "") {
+                layer.msg("类型不能为空不能为空");
+                return true;
+            }
+            if (isNaN(attach.res_num)) {
+                layer.msg("数量不能为空");
+                return true;
+            }
+            if (attach.res_num <= 0) {
+                layer.msg("非法数量");
+                return true;
+            }
+
+            parent.insertAttachData(attach);
+            // parent.layer.close(index);//关闭弹出的子页面窗口
+            return true;
+        });
+        //关闭弹窗
+        $('#btn_cancel').on('click', function () {
+            //关闭弹窗
+            parent.layer.close(index);//关闭弹出的子页面窗口
+        });
+
+    });
+</script>

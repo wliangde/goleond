@@ -1,0 +1,81 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+
+    <form class="layui-form" action="" method="post" >
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-inline">
+                <input type="text" lay-verify="required" name="id" readonly autocomplete="off" class="layui-input" value="{{.launcher.id}}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-inline">
+                <input type="text" lay-verify="required" name="addr" readonly autocomplete="off" placeholder="launcher ip" class="layui-input" value="{{.launcher.addr}}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">webaddr</label>
+            <div class="layui-input-inline">
+                <input type="text" name="web_addr" id="web_addr" lay-verify="required" readonly autocomplete="off" placeholder="30.17.3.155:9035" class="layui-input" value="{{.launcher.web_addr}}">
+            </div>
+            <div class="layui-form-mid layui-word-aux">*(不建议修改这里的地址，除非以前自动分配的端口冲突了)</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">Game服列表</label>
+            <div class="layui-input-inline">
+                <input type="text" id="game_servers" readonly name="game_servers" id="port" lay-verify="" autocomplete="off" placeholder="game" class="layui-input" value="{{.launcher.game_servers}}">
+            </div>
+            <div class="layui-input-inline">
+                <button class="layui-btn" id="btn_select_game">修改</button>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">Cross服列表</label>
+            <div class="layui-input-inline">
+                <input type="text" id="cross_servers"  readonly name="cross_servers" lay-verify="" autocomplete="off" placeholder="选择cross服" class="layui-input" value="{{.launcher.cross_servers}}">
+            </div>
+
+            <div class="layui-input-inline">
+                <select lay-verify=""  lay-search="" lay-filter="cross" style="width: 50%">
+                {{range $index,$elem := .CrossServerList}}
+                    <option value="{{$elem.id}}">{{$elem.id}}-{{$elem.name}}-{{$elem.adrr}}</option>
+                {{end}}
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <button class="layui-btn" id="btn_clear_cross">清空</button>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">Battle服列表</label>
+            <div class="layui-input-inline">
+                <input type="text" id="battle_servers" readonly name="battle_servers" lay-verify="" autocomplete="off" placeholder="选择battle服" class="layui-input" value="{{.launcher.battle_servers}}">
+            </div>
+
+            <div class="layui-input-inline">
+                <select lay-verify=""  lay-search="" lay-filter="battle" style="width: 50%">
+                {{range $index,$elem := .BattleServerList}}
+                    <option value="{{$elem.id}}">{{$elem.id}}-{{$elem.name}}-{{$elem.adrr}}</option>
+                {{end}}
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <button class="layui-btn" id="btn_clear_battle">清空</button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/static/js/launcher_edit.js"></script>

@@ -1,0 +1,41 @@
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择区服：</label>
+        <div class="layui-input-block star_input_width">
+            <select name="select_server_id" id="select_server_id" lay-verify="required" lay-search=""
+                    style="width: 100%">
+                <option value="">请选择服</option>
+            {{range $index,$elem := .ServerList}}
+                <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                        selected {{end}}  >{{$elem.name}}</option>
+            {{end}}
+            </select>
+        </div>
+        <hr>
+    </div>
+</form>
+
+{{/*upload放到form里会导致重复上传时自动提交form了*/}}
+<div class="layui-form-item">
+    <div class="layui-inline" style="height: 40px;">
+        <label class="layui-form-label">养成配置：</label>
+        <div class="layui-input-inline" style="width: 400px">
+            <input type="text" id="txt_config"  readonly lay-verify=""
+                   class="layui-input" value="">
+        </div>
+        <div class="layui-input-inline" style="width: auto">
+            <button class="layui-btn star_plus_btn" id="btn_add_file">
+                <i class="layui-icon">&#xe654;</i>
+            </button>
+        </div>
+    </div>
+    <hr>
+</div>
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" id="btn_send">一键养成</button>
+        <label id="id_result" style="margin-left: 10px; font-weight: bold;"></label>
+    </div>
+</div>
+
+<script src="/static/js/onekeydev.js"></script>

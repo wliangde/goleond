@@ -1,0 +1,59 @@
+<style type="text/css">
+    .onekeydump_label_width {
+        width: 100px;
+    }
+
+</style>
+
+<form class="layui-form">
+    <div class="layui-form-item">
+            <label class="layui-form-label onekeydump_label_width">目标平台id：</label>
+            <div class="layui-input-inline " style="width: 250px" >
+                <input type="text" id="dst_plat_id"   lay-verify="" placeholder="1(1：开发，2：主干，3：分支)"
+                       class="layui-input" value="">
+            </div>
+    </div>
+
+
+    <div class="layui-form-item">
+            <label class="layui-form-label onekeydump_label_width">目标gameid：</label>
+            <div class="layui-input-inline  "  style="width: 250px" >
+                <input type="text" id="dst_server_id"   lay-verify="" placeholder="1(game服的外部id)"
+                       class="layui-input" value="">
+            </div>
+    </div>
+
+
+    <div class="layui-form-item">
+            <label class="layui-form-label onekeydump_label_width">目标玩家id：</label>
+            <div class="layui-input-inline "  style="width: 250px"  >
+                <input type="text" id="dst_user_id"   lay-verify="" placeholder="1000058"
+                       class="layui-input" value="">
+            </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label onekeydump_label_width">导入到该区服：</label>
+        <div class="layui-input-inline "  style="width: 250px" >
+            <select name="select_server_id" id="select_server_id" lay-verify="required" lay-search=""
+            >
+                <option value="">请选择服</option>
+            {{range $index,$elem := .ServerList}}
+                <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                        selected {{end}}  >{{$elem.name}}</option>
+            {{end}}
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="btn_send" style="margin-left: 20px;">一键导入</button>
+            <label id="id_result" style="margin-left: 10px; font-weight: bold;"></label>
+        </div>
+    </div>
+
+</form>
+
+
+<script src="/static/js/onekeydump.js"></script>

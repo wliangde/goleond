@@ -1,0 +1,98 @@
+<style>
+    .my_label {
+        padding-left: 0%;
+        width: auto;
+    }
+
+    .my_td_right {
+        text-align: right;
+    }
+
+</style>
+
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+        <div class="layui-col-xs6 search_text">
+            <form class="layui-form" action="" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label my_label">选择服务器</label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <input type="text" id="txt_server_id" readonly required lay-verify="required" placeholder="服务器" class="layui-input" value="">
+                    </div>
+                    <div class="layui-input-inline"  style="width: auto">
+                        <button class="layui-btn star_plus_btn" id="btn_select_server" >
+                            <i class="layui-icon">&#xe654;</i>
+                        </button>
+                        <button class="layui-btn layui-btn-danger " id="btn_del">清空</button>
+                        <button class="layui-btn " id="btn_update" >确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    //服务器选择数据
+    //存serverid-->serverdata(Type, Id, Name ,Selected)
+    GPlatServerData = new Map();
+    
+    function refreshTxtRecv(txt) {
+        $("#txt_server_id").val(txt);
+    }
+
+    layui.use(['table', 'form', 'element', 'jquery'], function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+
+
+        //点击修改服务器
+        $('#btn_select_server').on('click', function () {
+            layer.open({
+                type: 2,
+                title: '选择服务器',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['700px', '500px'],
+                content: 'select_server2.html'
+            });
+            return false;       //不然layui本身的required 检查会触发
+        });
+
+        //点击发送更新请求
+        $('#btn_update').on('click', function () {
+            var server_ids = [];
+            var serverList  = GPlatServerData.values();
+            for (var i in serverList) {
+                var ptServer = serverList[i];
+                if (ptServer.Selected == true) {
+                    server_ids.push(ptServer.Id);
+                }
+            }
+            if (server_ids.length == 0) {
+                layer.msg("请选择服务器");
+                return false;
+            }
+
+            var args = {};
+            args["server_id"] =server_ids.join(",");
+            $.post('{{urlfor "GmController.AjaxUpdateCfg"}}', args, sendGmCmdRes, "json");
+            showLoading(layer, true);
+            return false;
+        });
+
+        var sendGmCmdRes = function (data) {
+            showLoading(layer, false);
+            if (data.status === 0) {
+                layer.msg(data.message);
+                return
+            }
+            layer.msg(data.message);
+        };
+
+        form.render();
+        //
+    });
+
+</script>

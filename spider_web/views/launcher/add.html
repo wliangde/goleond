@@ -1,0 +1,75 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+
+<form class="layui-form" action="" method="post" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">launcher监听地址</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ip" id="ip" lay-verify="required" autocomplete="off" placeholder="30.17.3.155" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*(launcher启动的地址，端口自动分配，端口范围 9000--10000)</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">webaddr</label>
+        <div class="layui-input-inline">
+            <input type="text" name="web_addr" id="web_addr" lay-verify="required" autocomplete="off" placeholder="30.17.3.155" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*(外部通过这个地址关停服务器，端口自动分配，端口范围，11000--12000)</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Game服列表</label>
+        <div class="layui-input-inline">
+            <input type="text" id="game_servers" readonly name="game_servers" id="port" lay-verify="" autocomplete="off" placeholder="game服" class="layui-input" value="">
+        </div>
+
+        <div class="layui-input-inline">
+            <button class="layui-btn" id="btn_select_game">修改</button>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Cross服列表</label>
+        <div class="layui-input-inline">
+            <input type="text" id="cross_servers" readonly  name="cross_servers" lay-verify="" autocomplete="off" placeholder="选择cross服" class="layui-input" value="">
+        </div>
+
+        <div class="layui-input-inline">
+            <select lay-verify=""  lay-search="" readonly  lay-filter="cross" style="width: 50%">
+                {{range $index,$elem := .CrossServerList}}
+                    <option value="{{$elem.id}}">{{$elem.id}}-{{$elem.name}}-{{$elem.adrr}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn" id="btn_clear_cross">清空</button>
+        </div>
+
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Battle服列表</label>
+        <div class="layui-input-inline">
+            <input type="text" id="battle_servers" name="battle_servers" lay-verify="" autocomplete="off" placeholder="选择battle服" class="layui-input" value="">
+        </div>
+
+        <div class="layui-input-inline">
+            <select lay-verify=""  lay-search="" lay-filter="battle" style="width: 50%">
+                {{range $index,$elem := .BattleServerList}}
+                    <option value="{{$elem.id}}">{{$elem.id}}-{{$elem.name}}-{{$elem.adrr}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn" id="btn_clear_cross">清空</button>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</div>
+<script src="/static/js/launcher_new.js"></script>

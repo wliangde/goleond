@@ -1,0 +1,447 @@
+<style>
+    .my_label {
+        padding-right: 5px;
+        width: auto;
+        text-align: right;
+    }
+
+    .gm_label {
+        padding-left: 0px;
+        width: 135px;
+    }
+
+    .cmd_desc {
+        color: green;
+        font-weight: bold;
+    }
+
+    .cmd_param {
+        width: 700px;
+    }
+
+    .my_td_right {
+        text-align: right;
+    }
+
+</style>
+
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+        <div class="layui-col-xs6 search_text">
+            <form class="layui-form" action="" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label my_label">选择服</label>
+
+                    <div class="layui-input-inline">
+                        <select name="server_id" id="server_id" lay-verify="required" lay-search="" style="width: 100%">
+                            <option value="">请选择服</option>
+                        {{range $index,$elem := .ServerList}}
+                            <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                                    selected {{end}}  >{{$elem.name}}</option>
+                        {{end}}
+                        </select>
+                    </div>
+
+                    <label class="layui-form-label my_label">玩家id</label>
+                    <div class="layui-input-inline" style="width: 20%;">
+                        <input type="text" name="user_id" id="user_id" lay-verify="" autocomplete="off"
+                               placeholder="玩家角色id" class="layui-input" value="{{.User.UserId}}">
+                    </div>
+                    <label class="layui-form-label my_label">玩家名</label>
+                    <div class="layui-input-inline" style="width: 20%;">
+                        <input type="text" name="user_name" id="user_name" lay-verify="" autocomplete="off"
+                               placeholder="玩家名" class="layui-input" value="{{.User.Name}}">
+                    </div>
+                    <button class="layui-btn" lay-submit="" lay-filter="sub">查询</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+            <li class="layui-this">玩家信息</li>
+            <li>GM操作</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100%;">
+        {{/*玩家属性*/}}
+            <div class="layui-tab-item layui-show ">
+                <table class="layui-table" lay-even="" lay-skin="nob">
+                    <colgroup>
+                        <col width="150">
+                        <col width="250">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+                    <tr>
+                        <td class="my_td_right">玩家id:</td>
+                        <td style="padding-left: 0px;">{{.User.UserId}}</td>
+                        <td class="my_td_right">角色名:</td>
+                        <td style="padding-left: 0px;">{{.User.Name}}</td>
+                    </tr>
+                    <tr>
+                        <td class="my_td_right">状态:</td>
+                        <td style="padding-left: 0px;">{{.State}}</td>
+                        <td class="my_td_right">性别:</td>
+                        <td style="padding-left: 0px;">{{.Sex}}</td>
+                    </tr>
+                    <tr>
+                        <td class="my_td_right">创建时间:</td>
+                        <td style="padding-left: 0px;">{{.CreateTime}}</td>
+                        <td class="my_td_right">登入时间:</td>
+                        <td style="padding-left: 0px;">{{.OnlineTime}}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="my_td_right">登出时间:</td>
+                        <td style="padding-left: 0px;">{{.OfflineTime}}</td>
+                        <td class="my_td_right">上次登入时间:</td>
+                        <td style="padding-left: 0px;">{{.LastOnlineTime}}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="my_td_right">等级:</td>
+                        <td style="padding-left: 0px;">{{.User.Level}}</td>
+                        <td class="my_td_right">经验:</td>
+                        <td style="padding-left: 0px;">{{.User.Exp}}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="my_td_right">紫金:</td>
+                        <td style="padding-left: 0px;">{{.User.Diamond}}</td>
+                        <td class="my_td_right">元宝:</td>
+                        <td style="padding-left: 0px;">{{.User.Gold}}</td>
+                    </tr>
+                    <tr>
+                        <td class="my_td_right">vip等级:</td>
+                        <td style="padding-left: 0px;">{{.VipLevel}}</td>
+                        <td class="my_td_right">vip经验:</td>
+                        <td style="padding-left: 0px;">{{.User.VipExp}}</td>
+                    </tr>
+                    <tr>
+                        <td class="my_td_right">银币:</td>
+                        <td style="padding-left: 0px;">{{.User.Coin}}</td>
+                        <td class="my_td_right">登陆账号:</td>
+                        <td style="padding-left: 0px;">{{.User.Uuid}}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+                <hr>
+                <hr>
+                <hr>
+                <hr>
+
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">武将</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.Knights}}</textarea>
+                </div>
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">装备</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.Equips}}</textarea>
+                </div>
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">支线任务</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.DungeonBranchTask}}</textarea>
+                </div>
+
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">支线任务</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.DungeonBranchTask}}</textarea>
+                </div>
+
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">竞技场记录</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.ArenaRecords}}</textarea>
+                </div>
+
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">神器</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.Artifacts}}</textarea>
+                </div>
+                <div class="layui-input-inline " style="width: 400px;height: 400px">
+                    <label class="layui-label">宝石</label>
+                    <textarea readonly class="layui-textarea" rows="18"> {{.Gems}}</textarea>
+                </div>
+            </div>
+
+        {{/*GM操作*/}}
+            <div class="layui-tab-item ">
+            {{/*加资源*/}}
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">加资源</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="layui-form" action="" method="post">
+                            <div class="layui-form-item" style="margin-left: 0px;">
+                                <label class="layui-form-label my_label">资源类型</label>
+
+                                <div class="layui-input-inline">
+                                    <select name="resource_key" id="resource_key" lay-verify="required" lay-search=""
+                                            lay-filter="resourcelist"
+                                            style="width: 100%">
+                                        <option value=""></option>
+                                    {{range $index,$elem := .ResourceList}}
+                                        <option value="{{$elem.id}}">{{$elem.name}}</option>
+                                    {{end}}
+                                    </select>
+                                </div>
+                                <label class="layui-form-label my_label">资源id</label>
+                                <div class="layui-input-inline">
+                                    <select name="resource_id" id="resource_id" lay-verify="" lay-search=""
+                                            style="width: 100%">
+                                        <option value=""></option>
+                                    {{range $index,$elem := .ResourceIdList}}
+                                        <option value="{{$elem.id}}" {{if eq $elem.id $.ServerId}}
+                                                selected {{end}}  >{{$elem.name}}</option>
+                                    {{end}}
+                                    </select>
+                                </div>
+
+                                <label class="layui-form-label my_label">数量</label>
+                                <div class="layui-input-inline" style="width: 20%;">
+                                    <input type="text" name="txt_as_num" id="txt_as_num" lay-verify="required"
+                                           autocomplete="off" placeholder="数量" class="layui-input">
+                                </div>
+                                <button class="layui-btn" lay-submit="" lay-filter="btn_add_resource">确定</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            {{/*任意GM*/}}
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">快捷gm</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="layui-colla-content layui-show">
+                            <form class="layui-form" id="form_any_gm" action="" method="POST">
+                                <div class="layui-form-item" style="margin-left: 0px;">
+                                    <label class="layui-form-label my_label">GM命令</label>
+                                    <div class="layui-input-inline" style="width: 20%;">
+                                        <input type="text" id="txt_any_gm" lay-verify="required"
+                                               autocomplete="off" placeholder="add_resource" class="layui-input"
+                                               value="">
+                                    </div>
+                                    <label class="layui-form-label my_label">参数</label>
+                                    <div class="layui-input-inline" style="width: 450px;">
+                                        <input type="text" id="txt_any_gm_param" lay-verify=""
+                                               autocomplete="off"
+                                               placeholder='{"restype1":101,"resvalue1":1001,"ressize1":1}'
+                                               class="layui-input" value="">
+                                    </div>
+                                    <button class="layui-btn" lay-submit="" lay-filter="btn_any_gm">确定</button>
+                                </div>
+                            </form>
+                            <hr>
+                        {{range $index,$elem := .GMList}}
+                            <form class="layui-form" id="form_any_gm" action="" method="POST">
+                                <div class="layui-form-item" style="margin-top: 10px;">
+                                    <label class="layui-form-label gm_label cmd_desc">{{$elem.Desc}} | </label>
+
+                                    <label class="layui-form-label my_label">参数1</label>
+                                    <div class="layui-input-inline cmd_param">
+                                        <input type="text" id="txt_{{$elem.Cmd}}_param1" name="{{$elem.Param1}}"
+                                               placeholder='{{$elem.ParamDesc1}}'
+                                        {{if eq $elem.Param1 "0"}}
+                                               readonly
+                                        {{end}}
+                                               class="layui-input" value="">
+                                    </div>
+
+                                    <label class="layui-form-label my_label">参数2</label>
+                                    <div class="layui-input-inline cmd_param ">
+                                        <input type="text" id="txt_{{$elem.Cmd}}_param2" name="{{$elem.Param2}}"
+                                               placeholder='{{$elem.ParamDesc2}}'
+                                        {{if eq $elem.Param2 "0"}}
+                                               readonly
+                                        {{end}}
+                                               class="layui-input" value="">
+                                    </div>
+
+                                    <label class="layui-form-label my_label">参数3</label>
+                                    <div class="layui-input-inline cmd_param">
+                                        <input type="text" id="txt_{{$elem.Cmd}}_param3" name="{{$elem.Param3}}"
+                                               placeholder='{{$elem.ParamDesc3}}'
+                                        {{if eq $elem.Param3 "0"}}
+                                               readonly
+                                        {{end}}
+                                               class="layui-input" value="">
+                                    </div>
+
+                                    <button class="layui-btn" onclick="generateGM('{{$elem.Cmd}}');return false;">确定
+                                    </button>
+                                </div>
+                            </form>
+                            <hr>
+                        {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var generateGM = function (cmd) {
+        var serverId = $("#server_id").val();
+        var uid = $("#user_id").val();
+
+        //param1
+        var param1Id = "#txt_" + cmd + "_param1";
+        var param1 = $(param1Id).val();
+        var param1name = $(param1Id).prop("name");
+
+        //param2
+        var param2Id = "#txt_" + cmd + "_param2";
+        var param2 = $(param2Id).val();
+        var param2name = $(param2Id).prop("name");
+
+        //param3
+        var param3Id = "#txt_" + cmd + "_param3";
+        var param3 = $(param3Id).val();
+        var param3name = $(param3Id).prop("name");
+
+        var param = {};
+        if (param1name != "0") {
+            param[param1name] = param1;
+        }
+        if (param2name != "0") {
+            param[param2name] = param2;
+        }
+        if (param3name != "0") {
+            param[param3name] = param3;
+        }
+
+        paramStr = JSON.stringify(param);
+
+        // console.log(param);
+        sendGmCmd(serverId, uid, cmd, paramStr);
+    };
+
+    //发送gm指令
+    var sendGmCmd = function (serverId, userId, gmCmd, param) {
+        if (serverId == "") {
+            layer.msg("请选择服务器");
+            return;
+        }
+        if (userId == "") {
+            layer.msg("请输入角色id");
+            return;
+        }
+        if (gmCmd == "") {
+            layer.msg("请输入gm命令");
+            return;
+        }
+
+        var args = {};
+        args["server_id"] = serverId;
+        args["user_id"] = userId;
+        args["gmcmd"] = gmCmd;
+        args["param"] = param;
+        console.log("wld", args["param"]);
+        $.post('{{urlfor "GmController.DoGM"}}', args, sendGmCmdRes, "json");
+        // var desc = "[exec_gm_cmd_player]"+"cmd:"+gmcmd;
+        // insertLog(g_server_id, charid, "",desc);
+    };
+
+    var sendGmCmdRes = function (data) {
+        if (data.status === 0) {
+            layer.msg(data.message);
+            return
+        }
+        layer.msg(data.message);
+    };
+
+
+    layui.use(['table', 'form', 'element', 'jquery'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var element = layui.element;
+        var error_info = "{{.flash.error}}";
+        var $ = layui.jquery;
+        if (error_info) {
+            layer.msg(error_info, {time: 2000, offset: '100px'});
+        }
+
+        //资料列表联动
+        form.on('select(resourcelist)', function (data) {
+            $.getJSON("/gm/getresourceidlist?pid=" + data.value, function (data) {
+                var optionstring = "";
+                $.each(data.message, function (i, item) {
+                    optionstring += "<option value=\"" + item.id + "\" >" + item.name + "</option>";
+                });
+                $("#resource_id").html('<option value=""></option>' + optionstring);
+                form.render('select'); //这个很重要
+            });
+        });
+
+        //加资源
+        form.on('submit(btn_add_resource)', function (data) {
+
+            var args = {};
+            args["server_id"] = $("#server_id").val();
+            args["user_id"] = $("#user_id").val();
+            args["res_key"] = $("#resource_key").val();
+            args["res_id"] = $("#resource_id").val();
+            args["res_num"] = $("#txt_as_num").val();
+
+            $.post('{{urlfor "GmController.AddResource"}}', args, sendGmCmdRes, "json");
+            return false;
+        });
+
+
+        //任意gm指令
+        form.on('submit(btn_any_gm)', function (data) {
+            var serverId = $("#server_id").val();
+            var uid = $("#user_id").val();
+            var gmCmd = $("#txt_any_gm").val();         //addresource
+            var param = $("#txt_any_gm_param").val();   //{"restype1":101,"resvalue1":1001,"ressize1":1}
+            console.log("wld");
+
+            sendGmCmd(serverId, uid, gmCmd, param);
+            return false;
+        });
+
+    {{/*//发送gm指令*/}}
+    {{/*var sendGmCmd = function (serverId, userId, gmCmd, param) {*/}}
+    {{/*if (serverId == "") {*/}}
+    {{/*layer.msg("请选择服务器");*/}}
+    {{/*return;*/}}
+    {{/*}*/}}
+    {{/*if (userId == "") {*/}}
+    {{/*layer.msg("请输入角色id");*/}}
+    {{/*return;*/}}
+    {{/*}*/}}
+    {{/*if (gmCmd == "") {*/}}
+    {{/*layer.msg("请输入gm命令");*/}}
+    {{/*return;*/}}
+    {{/*}*/}}
+
+    {{/*var args = {};*/}}
+    {{/*args["server_id"] = serverId;*/}}
+    {{/*args["user_id"] = userId;*/}}
+    {{/*args["gmcmd"] = gmCmd;*/}}
+    {{/*args["param"] = param;*/}}
+    {{/*$.post('{{urlfor "GmController.DoGM"}}', args, sendGmCmdRes, "json");*/}}
+    {{/*// var desc = "[exec_gm_cmd_player]"+"cmd:"+gmcmd;*/}}
+    {{/*// insertLog(g_server_id, charid, "",desc);*/}}
+    {{/*};*/}}
+
+    {{/*var sendGmCmdRes = function (data) {*/}}
+    {{/*if (data.status === 0) {*/}}
+    {{/*layer.msg(data.message);*/}}
+    {{/*return*/}}
+    {{/*}*/}}
+    {{/*layer.msg(data.message);*/}}
+    {{/*};*/}}
+
+        form.render();
+        //
+    });
+
+</script>

@@ -1,0 +1,100 @@
+<style xmlns="http://www.w3.org/1999/html">
+    .sc_height {
+        height: 450px;
+        overflow-y: scroll;
+    }
+
+    .star_input_width {
+        width: 100px;
+    }
+
+    .c_ch_plat {
+        padding-left: 20px;
+    }
+
+    .c_ch_plat div {
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+    .span_duigou{
+        color:red;
+        margin-right: 5px;
+        display:-moz-inline-box;
+        display:inline-block;
+        width:20px;
+    }
+
+</style>
+
+<div class="layui-col-xs3 sc_height">
+    <div class="layui-form c_ch_plat">
+        <div>
+            <input type="checkbox" lay-skin="primary" lay-filter="plat_chooseall" title="全选" id="plat_chooseall">
+        </div>
+        <div id="div_plat">
+            {{/*js动态填充*/}}
+        </div>
+    </div>
+</div>
+
+<div class="layui-col-xs9 sc_height">
+    <div class="layui-form c_ch_plat">
+        <div>
+            <input type="checkbox" lay-skin="primary" lay-filter="server_chooseall" title="全选" id="server_chooseall">
+            <span style="color:green;" id="id_plat_name"></span>
+        </div>
+        <div id ="id_server_list">
+          {{/*js动态填充*/}}
+        </div>
+    </div>
+</div>
+<hr>
+
+<div class="layui-col-xs3 c_ch_plat">
+    <h3 style="margin-top: 10px;">选择玩家条件</h3>
+</div>
+<div class="layui-col-xs9  layui-form  c_ch_plat">
+    <div class="layui-row">
+        <div class=" layui-col-xs4 ">
+            <div class="layui-form-item">
+                <label>筛选条件类型</label>
+                <div class="layui-input-inline input_width">
+                    <select name="select_filter_type" id="filter_type" lay-filter="select_filter_type">
+                        <option value=""></option>
+                        <option value="1">玩家VIP等级</option>
+                        <option value="2">玩家等级</option>
+                        <option value="3">玩家建号时间</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class=" layui-col-xs4">
+            <div class="layui-form-item">
+                <label>最小值(闭区间)</label>
+                <div class="layui-input-inline input_width" style="margin-top: 10px;">
+                    <input type="number" id="filter_min_value" required lay-verify="txt_value" autocomplete="off"
+                           class="layui-input" value="">
+                </div>
+            </div>
+        </div>
+        <div class=" layui-col-xs4">
+            <div class="layui-form-item">
+                <label>最大值(闭区间)</label>
+                <div class="layui-input-inline input_width" style="margin-top: 10px;">
+                    <input type="number" id="filter_max_value" required lay-verify="txt_value" autocomplete="off"
+                           class="layui-input" value="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="layui-btn " id="btn_add" lay-submit="" lay-filter="btn_add">确定</button>
+    <button class="layui-btn layui-btn-danger" style="margin-left: 140px" id="btn_cancel">取消</button>
+</div>
+<script type="text/html" id="bar_add">
+    <a class="layui-btn layui-btn-xs" lay-event="add">添加</a>
+</script>
+<script type="text/html" id="bar_del">
+    <a class="layui-btn layui-btn-xs" lay-event="del" style="background-color: red">删除</a>
+</script>
+<script src="/static/js/mail_select_server.js"></script>

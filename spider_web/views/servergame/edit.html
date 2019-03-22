@@ -1,0 +1,125 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+<form class="layui-form" action="" method="post" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">服务器ID</label>
+        <div class="layui-input-inline">
+            <input type="text" name="server_id" readonly id="server_id" lay-verify="required" autocomplete="off" placeholder="服务器id" class="layui-input" value="{{.server.server_id}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*服务器id不允许修改</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">服务器名字</label>
+        <div class="layui-input-inline">
+            <input type="text" name="server_name" id="server_name" lay-verify="required" autocomplete="off" placeholder="服务器名字" class="layui-input" value="{{.server.server_name}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">proxy地址</label>
+        <div class="layui-input-inline">
+            <input type="text" name="web_addr" lay-verify="required" autocomplete="off" readonly class="layui-input" value="{{.server.web_addr}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*(十分不建议修改，修改后需要重启gm_proxy,charge_proxy)</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">日志服务器地址</label>
+        <div class="layui-input-inline">
+            <input type="text"  name="srpc_addr" lay-verify="required" autocomplete="off" class="layui-input" value="{{.server.srpc_addr}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">RedisAddr</label>
+        <div class="layui-input-inline">
+            <input type="text" name="redis_addr" id="email" lay-verify="required" autocomplete="off" placeholder="RedisAddr" class="layui-input" value="{{.server.redis_addr}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">DBId</label>
+        <div class="layui-input-inline">
+            <input type="text" name="dbid" id="email" lay-verify="required" autocomplete="off" placeholder="DBId" class="layui-input" value="{{.server.db_id}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">开服时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="open_time" name="open_time"  class="layui-input" value="{{.server.open_time}}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">维护开始时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="maintain_begin" name="maintain_begin"  class="layui-input" value="{{.server.maintain_begin}}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">维护结束时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="maintain_end" name="maintain_end"  class="layui-input" value="{{.server.maintain_end}}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</div>
+<script>
+var $;
+    layui.config({
+            base : "js/"
+    }).use(['form','element','layer','jquery', 'laydate'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+        var laydate = layui.laydate;
+
+        //开服时间
+        laydate.render({
+            elem: '#open_time' //指定元素
+            ,type: 'datetime'
+        });
+
+        //维护开始时间
+        laydate.render({
+            elem: '#maintain_begin' //指定元素
+            ,type: 'datetime'
+        });
+
+        //维护结束时间
+        laydate.render({
+            elem: '#maintain_end' //指定元素
+            ,type: 'datetime'
+        });
+
+        form.on('submit(sub)', function(data){
+            var form_data = $("form").serialize();
+            $.post('{{urlfor "ServerGameController.AjaxSave"}}', form_data, function (out) {
+                if (out.status == 0) {
+                    layer.msg("操作成功",{icon: 1},function () {
+                        // window.location.reload()
+                        window.location.href="/servergame/list"
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+      //但是，如果你的HTML是动态生成的，自动渲染就会失效
+      //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+      form.render();
+}); 
+</script>

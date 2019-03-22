@@ -1,0 +1,63 @@
+<style xmlns="http://www.w3.org/1999/html">
+    .sc_height {
+        height: 350px;
+        overflow-y: scroll;
+    }
+
+    .star_input_width {
+        width: 100px;
+    }
+
+    .c_ch_plat {
+        padding-left: 20px;
+    }
+
+    .c_ch_plat div {
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+    .span_duigou{
+        color:red;
+        margin-right: 5px;
+        display:-moz-inline-box;
+        display:inline-block;
+        width:20px;
+    }
+
+</style>
+
+<div class="layui-col-xs3 sc_height">
+    <div class="layui-form c_ch_plat">
+        <div>
+            <input type="checkbox" lay-skin="primary" lay-filter="plat_chooseall" title="全选" id="plat_chooseall">
+        </div>
+        <div id="div_plat">
+            {{/*js动态填充*/}}
+        </div>
+    </div>
+</div>
+
+<div class="layui-col-xs9 sc_height">
+    <div class="layui-form c_ch_plat">
+        <div>
+            <input type="checkbox" lay-skin="primary" lay-filter="server_chooseall" title="全选" id="server_chooseall">
+            <span style="color:green;" id="id_plat_name"></span>
+        </div>
+        <div id ="id_server_list">
+          {{/*js动态填充*/}}
+        </div>
+    </div>
+</div>
+<hr>
+
+<div class="layui-col-xs9  layui-form  c_ch_plat">
+    <button class="layui-btn " id="btn_add"  style="margin-left: 170px" lay-submit="" lay-filter="btn_add">确定</button>
+    <button class="layui-btn layui-btn-danger" style="margin-left: 140px" id="btn_cancel">取消</button>
+</div>
+<script type="text/html" id="bar_add">
+    <a class="layui-btn layui-btn-xs" lay-event="add">添加</a>
+</script>
+<script type="text/html" id="bar_del">
+    <a class="layui-btn layui-btn-xs" lay-event="del" style="background-color: red">删除</a>
+</script>
+<script src="/static/js/select_server2.js"></script>

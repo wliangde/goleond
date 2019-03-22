@@ -1,0 +1,109 @@
+<style type="text/css">
+    .onekeydump_label_width {
+        width: 80px;
+    }
+
+</style>
+
+<form class="layui-form" style="margin-left: 30px;margin-top: 50px">
+    <div class="layui-form-item">
+        <label class="layui-form-label onekeydump_label_width">uuid：</label>
+        <div class="layui-input-inline " style="width: 250px">
+            <input type="text" id="uuid" placeholder="被封禁玩家uuid"
+                   class="layui-input" value="">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label onekeydump_label_width">封禁结束时间：</label>
+        <div class="layui-input-inline" style="width: 250px">
+            <input type="text" id="free_time" name="free_time" class="layui-input" value="">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label onekeydump_label_width">原因：</label>
+        <div class="layui-input-inline " style="width: 250px">
+            <input type="text" id="reason" placeholder=""
+                   class="layui-input" value="">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="btn_send" style="width: 250px;">封禁</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    var $;
+
+    var sendAddForbidUser = function () {
+        var serverId = parent.serverId;
+        console.log("serverid"+serverId);
+        if (serverId == "") {
+            layer.msg("请选择服务器");
+            return false;
+        }
+
+        var uuid = $("#uuid").val();
+        if (uuid == "") {
+            layer.msg("请输入uuid");
+            return false;
+        }
+
+        var freeTime = $("#free_time").val();
+        if (free_time == "") {
+            layer.msg("请选择封禁结束时间");
+            return false;
+        }
+        var reason = $("#reason").val();
+
+        var args = {};
+        args.server_id = serverId;
+        args.uuid = uuid;
+        args.free_time = freeTime;
+        args.reason = reason;
+        $.post('{{urlfor "GmController.Ajax_Add_Forbid_User"}}', args, sendGmCmdRes, "json");
+    };
+
+
+    var sendGmCmdRes = function (data) {
+        console.log("status", data.status);
+        if (data.status === 0) { //成功
+            layer.msg(data.message);
+
+            //刷新父类类别
+            parent.doSearch();
+            //关闭自己界面
+            //关闭弹窗
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);//关闭弹出的子页面窗口
+            return
+        }
+        layer.msg(data.message);
+    };
+
+    layui.use(['form', 'element', 'layer', 'jquery', 'laydate'], function () {
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#free_time' //指定元素
+            , type: 'datetime'
+        });
+
+        $('#btn_send').on('click', function () {
+            sendAddForbidUser();
+            return false;
+        });
+
+        form.render();
+    });
+</script>

@@ -1,0 +1,103 @@
+
+
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-row" style="margin-top: 20px;">
+            <a class="layui-btn" data-type="tabAdd" href="/gm/releaseversion">发布新版本</a>
+            <button class="layui-btn layui-btn-danger" id="btn_resend">重新发布</button>
+            <label id="id_result" style="margin-left: 10px; font-weight: bold;"></label>
+    </div>
+    <table class="layui-hide" id="table_list" lay-filter="table_filter">
+    </table>
+
+    <script type="text/html" id="bar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    </script>
+</div>
+<script>
+    var layer;
+    //显示和关闭加载框
+    var showLoading = function (show) {
+        if (show === true) {
+            layer.load(2);
+        } else {
+            layer.closeAll('loading');
+        }
+    };
+
+    var doRealeaseRes = function (data) {
+        //关闭加载框
+        showLoading(false);
+        if (data.status != 0) { //失败
+            layer.msg(data.message);
+            return;
+        }
+        var result = data.message;
+        showResult(result);
+    };
+
+    var showResult = function (result) {
+        var ok = result.Total === result.Success;
+        var html = "";
+
+        if (ok === true) {
+            var txt = "版本服" + result.Total + "个，全部成功！";
+            html = '<span style="color: green;">' + txt + '</span>';
+        } else {
+            var txt = "版本服" + result.Total + "个，成功" + result.Success + "个,失败" + result.Fail + "个";
+            html = '<span style="color: red;">' + txt + '</span>';
+        }
+        $("#id_result").html(html);
+    };
+
+    layui.use(['layer', 'table'], function(){
+        layer = layui.layer;
+        var table = layui.table;
+        //方法级渲染
+        table.render({
+            elem: '#table_list'
+            ,url: '/gm/reqversionlist'
+            ,cols: [[
+                {field:'id', title: 'ID', align:'center',sort: true, width:150}
+                ,{field:'plat_id', title: '平台ID' }
+                ,{field:'channel_id',title: '渠道ID' }
+                ,{field:'patch',title: 'patch' }
+                ,{field:'version',title: '版本号' }
+                ,{field:'patch_url',title: 'patch地址' }
+                ,{field:'min_version',title: '最低版本' }
+                ,{field:'min_url',title: '母包地址' }
+                ,{field:'release_time',title: '发布时间' }
+                ,{fixed: 'right', width:160, align:'center', toolbar: '#bar'}
+            ]]
+            ,plat_id: 'listReload'
+            ,page: true
+            ,height: "full-130"
+        });
+
+        //监听工具条
+        table.on('tool(table_filter)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+
+                window.location.href = "/gm/releaseversion?plat_id=" + data.plat_id+"&channel_id="+data.channel_id;
+            } else {
+                layer.msg('操作不存在');
+            }
+        });
+
+        $('#btn_resend').on('click', function () {
+            // //新增一个Tab项
+            // tab.tabAdd({
+            //     title: '新选项'+ (Math.random()*1000|0) //用于演示
+            //     ,content: '内容'+ (Math.random()*1000|0)
+            //     ,id: new Date().getTime() //实际使用一般是规定好的id，这里以时间戳模拟下
+            // })
+            var args = {};
+            args.resend = 1;
+            $.post('/gm/dorelease', args, doRealeaseRes, "json");
+            showLoading(true);
+            return false;       //不然layui本身的required 检查会触发
+        });
+
+    });
+
+</script>

@@ -1,0 +1,28 @@
+.wld_span {
+    background-color: green;
+}
+.star_input_width {
+    width: 400px;
+}
+.star_attatch {
+    /*background-color: yellow;*/
+    height: 40px;
+    width: 120px;
+    margin-top: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    border: 2px solid #e6e6e6;
+}
+/*粗体*/
+.star_fond_bold {
+    font-weight: bold
+}
+/*点击查看失败详情链接*/
+.star_a {
+    color: green;
+}
+
+/*加号按钮宽度*/
+.star_plus_btn {
+    width: 64px;
+}
