@@ -1,3 +1,38 @@
+<style>
+    #tabBox input {
+        background: #F6F3F3;
+        border: 1px solid #FF0000;
+    }
+
+    #tabBox .active {
+        background: #E9D4D4;
+    }
+
+    #tabBox div {
+        width: 300px;
+        height: 250px;
+        display: none;
+        padding: 10px;
+        background: #E9D4D4;
+        border: 1px solid #FF0000;
+    }
+
+    #box {
+        width: 100px;
+        height: 100px;
+        background: blue;
+        position: absolute;
+    }
+
+    #box2 {
+        width: 100px;
+        height: 300px;
+        background: grey;
+        position: absolute;
+    }
+
+</style>
+
 <div class="layui-row layui-col-space10 ">
     <div class="layui-col-md6">
         <div class="layui-card">
@@ -44,6 +79,8 @@
         </div>
     </div>
 
+    <div id="box"></div>
+    <div id="box2"></div>
 </div>
 
 
@@ -121,20 +158,125 @@
 
     p3.print();
     console.log(p3.print == p4.print);
-    var tabBox = document.getElementById('tabBox');
-    var tabBtn = tabBox.getElementsByTagName('input');
-    var tabDiv = tabBox.getElementsByTagName('div');
 
-    for (var i = 0; i < tabBtn.length; i++) {
-        tabBtn[i].index = i;
-        tabBtn[i].onclick = function () {
-            for (var j = 0; j < tabBtn.length; j++) {
-                tabBtn[j].className = '';
-                tabDiv[j].style.display = 'none';
-            }
-            this.className = 'active';
-            tabDiv[this.index].style.display = 'block';
+    //==============test2
+    var tab = new Tab("tabBox");
+
+    function Tab(id) {
+        var tabBox = document.getElementById(id);
+        //将之前的全局变量变为对象的属性
+        this.tabBtn = tabBox.getElementsByTagName('input');
+        this.tabDiv = tabBox.getElementsByTagName('div');
+
+        var _this = this;
+        for (var i = 0; i < this.tabBtn.length; i++) {
+            this.tabBtn[i].index = i;
+            //此处这种方式调用函数，已经将clickBtn的所属变成this.tabBtn[i]
+            this.tabBtn[i].onclick = function () {
+                _this.clickBtn(this);   //this 是btn，_this 是tab
+            };
+        }
+    };
+    //将之前的全局函数添加到构造函数的原型里，作为对象的一个方法
+    Tab.prototype.clickBtn = function (btn) {
+        // alert(this); //HTMLInputElement
+        for (var j = 0; j < this.tabBtn.length; j++) {
+            this.tabBtn[j].className = '';
+            this.tabDiv[j].style.display = 'none';
+        }
+        this.className = 'active';
+        this.tabDiv[btn.index].style.display = 'block';
+    };
+
+    function Person2(name) {
+        this.name = name;
+        _this = this;
+        setInterval(function () {
+            _this.tick();
+        }, 3000);
+    };
+
+    Person2.prototype.tick = function () {
+        console.log("Welcome", this.name)
+    };
+
+    var p = new Person2("wliangde");
+
+</script>
+
+<script>
+    // var oBox = document.getElementById("box");
+    // oBox.onmousedown = fnDown;
+    //
+    // //鼠标按下
+    // function fnDown(ev) {
+    //     var oEvent = ev || event;
+    //     disX = oEvent.clientX - oBox.offsetLeft;
+    //     disY = oEvent.clientY - oBox.offsetTop;
+    //     document.onmousemove = fnMove;
+    //     document.onmouseup = fnUp;
+    // }
+    //
+    // //鼠标移动事件
+    // function fnMove(ev) {
+    //     var oEvent = ev || event;
+    //
+    //     oBox.style.left = oEvent.clientX - disX + 'px';
+    //     oBox.style.top = oEvent.clientY - disY + 'px';
+    // }
+    //
+    // //鼠标抬起事件
+    // function fnUp() {
+    //     document.onmousemove = null;
+    //     document.onmouseup = null;
+    // }
+
+    function Drag(id) {
+        this.id = id;
+        this.oBox = document.getElementById(id);
+        this.disX = 0;
+        this.disY = 0;
+        var _this = this;
+        this.oBox.onmousedown = function (ev) {
+            _this.fnDown(ev);
+        }
+    };
+
+    //按下鼠标左键
+    Drag.prototype.fnDown = function (ev) {
+        var oEvent = ev || event;
+        this.disX = oEvent.clientX - this.oBox.offsetLeft;
+        this.disY = oEvent.clientY - this.oBox.offsetTop;
+        var _this = this;
+        document.onmousemove = function() {
+            _this.fnMove();
         };
-    }
+        document.onmouseup = function() {
+            _this.fnUp();
+        };
+        this.oBox.onmouseleave = function () {
+            _this.fnMove();
+            _this.fnUp();
+            console.log("leave", _this.id);
+        };
+        console.log("down",this.id);
+    };
+    //移动
+    Drag.prototype.fnMove = function (ev) {
+        var oEvent = ev || event;
+        this.oBox.style.left = oEvent.clientX - this.disX + 'px';
+        this.oBox.style.top = oEvent.clientY - this.disY + 'px';
+        console.log("move",this.id);
+    };
+    //抬起
+    Drag.prototype.fnUp = function () {
+        document.onmousemove = null;
+        document.onmouseup = null;
+        this.oBox.onmouseleave = null;
+        console.log("up",this.id);
+    };
+
+    var mb = new Drag("box");
+    var mb2 = new Drag("box2");
 
 </script>
